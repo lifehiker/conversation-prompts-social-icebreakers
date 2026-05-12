@@ -1,0 +1,23 @@
+{
+  "name": "Prompt — Conversation Cards",
+  "short_name": "Prompt",
+  "description": "Context-specific conversation cards for real-world social moments.",
+  "start_url": "/app",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0f172a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "categories": ["social", "lifestyle", "entertainment"]
+}
