@@ -146,9 +146,11 @@ See `HUMAN_INPUT_NEEDED.md` for setup instructions.
 
 ## Deployment Fix (2026-05-13)
 
-**Root cause**: App failed to start in Coolify because `prisma db push` in the Docker CMD could not determine the database URL. In Prisma 7, the `url` field was removed from `schema.prisma`'s datasource block — it must live in `prisma.config.ts`. The runner stage was not copying `prisma.config.ts`, so Prisma had no URL and crashed on startup.
+**Root cause**: App failed to start in Coolify because `prisma db push` in the Docker CMD could not determine the database URL. `schema.prisma` had no `url` field in the datasource block, and `prisma.config.ts` (which provides the URL via `defineConfig`) was not copied to the Docker runner stage. Prisma CLI had no URL, so `db push` failed, the `&&` chain short-circuited, and `node server.js` never ran.
 
-**Fix applied**: Added `COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts` to the Dockerfile runner stage. `prisma.config.ts` reads `DATABASE_URL` from the environment (already set as `file:/data/app.db` in the runner stage).
+**Fixes applied**:
+1. Added `url = env("DATABASE_URL")` to the datasource block in `prisma/schema.prisma` so the Prisma CLI can resolve the URL directly from the environment variable without requiring `prisma.config.ts`.
+2. Added `COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts` to the Dockerfile runner stage as belt-and-suspenders — the config file reads `DATABASE_URL` from the environment (already set as `file:/data/app.db` in the runner stage).
 
 ## Build Verification
 
