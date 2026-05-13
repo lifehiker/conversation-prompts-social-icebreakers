@@ -126,6 +126,7 @@ All SEO pages include:
 | sitemap.xml | `src/app/sitemap.ts` — all routes | `src/app/sitemap.ts` |
 | robots.txt | Allow all, disallow /api/ | `src/app/robots.ts` |
 | Dockerfile | node:20-slim, openssl, prisma generate, db push on startup | `Dockerfile` |
+| Prisma 7 CLI config in Docker | `prisma.config.ts` copied to runner stage (Prisma 7 removed url from schema.prisma) | `Dockerfile` |
 | output: standalone | Confirmed in next.config.ts | `next.config.ts` |
 | Zero-config startup | All SDKs guarded, defaults baked in | All API routes |
 
@@ -142,6 +143,12 @@ These features require credentials that can't be provisioned automatically. The 
 See `HUMAN_INPUT_NEEDED.md` for setup instructions.
 
 ---
+
+## Deployment Fix (2026-05-13)
+
+**Root cause**: App failed to start in Coolify because `prisma db push` in the Docker CMD could not determine the database URL. In Prisma 7, the `url` field was removed from `schema.prisma`'s datasource block — it must live in `prisma.config.ts`. The runner stage was not copying `prisma.config.ts`, so Prisma had no URL and crashed on startup.
+
+**Fix applied**: Added `COPY --from=builder --chown=nextjs:nodejs /app/prisma.config.ts ./prisma.config.ts` to the Dockerfile runner stage. `prisma.config.ts` reads `DATABASE_URL` from the environment (already set as `file:/data/app.db` in the runner stage).
 
 ## Build Verification
 

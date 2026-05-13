@@ -108,6 +108,7 @@
 - [x] `Dockerfile` — node:20-slim, openssl in builder+runner, prisma generate in builder, db push + seed in CMD
 - [x] `output: "standalone"` confirmed in next.config.ts
 - [x] Zero-config startup (app runs without any env vars configured)
+- [x] FIXED: Copy `prisma.config.ts` to runner stage (Prisma 7 CLI requires it for db URL since url field no longer lives in schema.prisma)
 
 ### Build Verification
 - [x] `npm run build` passes — 24 routes, 0 TypeScript errors
